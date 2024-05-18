@@ -1,0 +1,11 @@
+/starter
+/scripts
+/dev
+/src
+node_modules
+dev.tsx
+dev.jsx
+dev.js
+package-lock.json
+tsconfig.json
+tsconfig.esm.json

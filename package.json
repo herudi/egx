@@ -1,6 +1,6 @@
 {
   "name": "egx",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Express got Htmx and JSX",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -48,6 +48,22 @@
       "types": "./dist/types/api.d.ts",
       "require": "./dist/cjs/api.js",
       "import": "./dist/esm/api.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/types/index.d.ts"
+      ],
+      "jsx-runtime": [
+        "./dist/types/jsx-runtime.d.ts"
+      ],
+      "jsx-dev-runtime": [
+        "./dist/types/jsx-dev-runtime.d.ts"
+      ],
+      "api": [
+        "./dist/types/api.d.ts"
+      ]
     }
   }
 }
