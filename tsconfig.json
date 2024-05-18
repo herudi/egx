@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "declarationDir": "./dist/types",
+    "outDir": "./dist/cjs",
+    "esModuleInterop": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "module": "CommonJS",
+    "target": "ES2017",
+    "lib": ["DOM"]
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./node_modules/**/*"]
+}
