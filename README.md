@@ -80,6 +80,16 @@ const Foo = () => {
 }
 ```
 
+### useResponse
+```tsx
+
+const Foo = () => {
+  const res = useResponse();
+  res.set("my-header", "value");
+  return <h1>hello</h1>;
+}
+```
+
 ### useParams
 ```tsx
 type User = { name: string };
@@ -93,6 +103,43 @@ app.get("/user/:name", (req, res) => {
   res.egx(<Foo/>);
 });
 ```
+
+### useQuery
+```tsx
+type User = { name: string };
+
+const Foo = () => {
+  const { name } = useQuery<User>();
+  return <h1>{name}</h1>;
+}
+
+app.get("/user", (req, res) => {
+  res.egx(<Foo/>);
+});
+
+// GET /user?name=john
+```
+
+### useBody
+```tsx
+type User = { name: string };
+
+const UserPost = async () => {
+  const user = useBody<User>();
+  // example save to db
+  await db.user.save(user);
+
+  return <h1>{user.name}</h1>;
+}
+
+app.post("/user", (req, res) => {
+  res.egx(<UserPost/>);
+});
+```
+
+## License
+
+[MIT](LICENSE)
 
 
 
