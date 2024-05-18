@@ -1,6 +1,6 @@
 {
   "name": "egx",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Express got Htmx and JSX",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -16,6 +16,13 @@
     "JSX",
     "React"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herudi/egx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/herudi/egx/issues"
+  },
   "author": "Herudi",
   "license": "MIT",
   "devDependencies": {
