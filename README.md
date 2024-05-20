@@ -66,6 +66,15 @@ app.post("/clicked", (req, res) => {
   res.egx(<h1>It's Me</h1>);
 });
 
+// handling promise
+app.get("/pet", async (req, res, next) => {
+  try {
+    await res.egx(<h1>Cat</h1>);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.listen(3000, () => {
   console.log("> Running on port 3000");
 });

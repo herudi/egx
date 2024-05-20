@@ -11,7 +11,9 @@ app.get("/", (req, res) => {
       <Helmet>
         <title>Welcome Home</title>
       </Helmet>
-      <button hx-post="/clicked" hx-swap="outerHTML">Click Me</button>
+      <button hx-post="/clicked" hx-swap="outerHTML">
+        Click Me
+      </button>
     </div>,
   );
 });

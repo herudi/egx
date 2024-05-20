@@ -76,9 +76,8 @@ export const BaseContext = createContext();
  * }
  * ```
  */
-export const useDataContext = <T = EObject>(): TDataContext<
-  T
-> => useContext(BaseContext);
+export const useDataContext = <T = EObject>(): TDataContext<T> =>
+  useContext(BaseContext);
 
 /**
  * useRequest.

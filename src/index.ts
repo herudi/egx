@@ -3,17 +3,13 @@ import { Helmet as HelmetCore, type HelmetRewind } from "./helmet";
 import { BaseContext } from "./hook";
 import type { EGX, EObject, FC, TAny } from "./types";
 export * from "./hook";
+export * from "./component";
 export * from "./types";
 
 export const Helmet = HelmetCore;
 export type { HelmetRewind };
 
 declare global {
-  // slot type
-  var EGX_INIT_HOOK: {
-    ctx_i: number;
-    ctx: TAny;
-  };
   namespace Express {
     export interface Response {
       egx: (elem: EGX.Element | FC<TAny>) => Promise<void>;
@@ -100,11 +96,12 @@ const mutAttr: Record<string, string> = {
 export function escapeHtml(str: string, force?: boolean) {
   return (internal.precompile && !force) || !REG_ETT.test(str)
     ? str
-    : str.replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    : str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 export function toStyle(val: EGX.CSSProperties) {
   return Object.keys(val).reduce(
@@ -177,15 +174,16 @@ export const toHtml = async (body: string, init: EGX.ChildNode) => {
     `<html${toAttr(attr.html)}>` +
     '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
     (await renderToString(init)) +
-    (head.length ? (await renderToString(head)) : "") +
+    (head.length ? await renderToString(head) : "") +
     `</head><body${toAttr(attr.body)}>${body}` +
-    (footer.length ? (await renderToString(footer)) : "") +
+    (footer.length ? await renderToString(footer) : "") +
     "</body></html>"
   );
 };
 
 export function egx(htmxScriptElement?: EGX.ChildNode): RequestHandler {
-  const init = htmxScriptElement ??
+  const init =
+    htmxScriptElement ??
     h("script", { src: "https://unpkg.com/htmx.org@1.9.10" });
   return (req, res, next) => {
     res.egx = async (element: EGX.Element | FC<TAny>) => {
@@ -196,7 +194,7 @@ export function egx(htmxScriptElement?: EGX.ChildNode): RequestHandler {
       });
       const body = await renderToString(elem);
       const isHtmxReq = req.headers["hx-request"] === "true";
-      res.send(isHtmxReq ? body : (await toHtml(body, init)));
+      res.send(isHtmxReq ? body : await toHtml(body, init));
     };
     next();
   };

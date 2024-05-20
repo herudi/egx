@@ -16,56 +16,56 @@ function toHelmet(elems: EGX.PureElement[]) {
   let hasBase = false;
   let hasTitle = false;
   for (let i = elems.length - 1; i >= 0; i -= 1) {
-    const elem = elems[i];
-    if (elem.type === "base") {
-      if (hasBase) continue;
-      hasBase = true;
-    } else if (elem.type === "title") {
-      if (hasTitle) continue;
-      hasTitle = true;
+    const elem = elems[i] as EGX.PureElement;
+    if (elem != null) {
+      if (elem.type === "base") {
+        if (hasBase) continue;
+        hasBase = true;
+      } else if (elem.type === "title") {
+        if (hasTitle) continue;
+        hasTitle = true;
+      }
+      helmet.push(elem);
     }
-    helmet.push(elem);
   }
   return helmet.reverse();
 }
-type FCHelmet =
-  & ((
-    props: EGX.Props<{
-      footer?: boolean;
-      children?: EGX.ChildNode;
-    }>,
-  ) => EGX.Element | null)
-  & {
-    /**
-     * Rewind Helmet.
-     * @example
-     * const { head, footer, body, attr } = Helmet.rewind(<App />);
-     */
-    rewind: (elem?: EGX.PureElement) => HelmetRewind;
-    /**
-     * Write head tags.
-     * @example
-     * const current = Helmet.writeHeadTag?.() ?? [];
-     * Helmet.writeHeadTag = () => [
-     *   ...current,
-     *   <script src="/client.js"></script>
-     * ];
-     */
-    writeHeadTag?: () => EGX.PureElement[];
-    /**
-     * Write body tags.
-     * @example
-     * const current = Helmet.writeFooterTag?.() ?? [];
-     * Helmet.writeFooterTag = () => [
-     *   ...current,
-     *   <script src="/client.js"></script>
-     * ];
-     */
-    writeFooterTag?: () => EGX.PureElement[];
-    writeHtmlAttr?: () => EGX.HTMLAttributes;
-    writeBodyAttr?: () => EGX.HTMLAttributes;
-    reset: () => void;
-  };
+type FCHelmet = ((
+  props: EGX.Props<{
+    footer?: boolean;
+    children?: EGX.ChildNode;
+  }>,
+) => EGX.Element | null) & {
+  /**
+   * Rewind Helmet.
+   * @example
+   * const { head, footer, body, attr } = Helmet.rewind(<App />);
+   */
+  rewind: (elem?: EGX.PureElement) => HelmetRewind;
+  /**
+   * Write head tags.
+   * @example
+   * const current = Helmet.writeHeadTag?.() ?? [];
+   * Helmet.writeHeadTag = () => [
+   *   ...current,
+   *   <script src="/client.js"></script>
+   * ];
+   */
+  writeHeadTag?: () => EGX.PureElement[];
+  /**
+   * Write body tags.
+   * @example
+   * const current = Helmet.writeFooterTag?.() ?? [];
+   * Helmet.writeFooterTag = () => [
+   *   ...current,
+   *   <script src="/client.js"></script>
+   * ];
+   */
+  writeFooterTag?: () => EGX.PureElement[];
+  writeHtmlAttr?: () => EGX.HTMLAttributes;
+  writeBodyAttr?: () => EGX.HTMLAttributes;
+  reset: () => void;
+};
 /**
  * SSR Helmet for SEO.
  * @example
@@ -88,11 +88,13 @@ export const Helmet: FCHelmet = ({ children, footer }) => {
   const elements: EGX.PureElement[] = [];
   for (let i = 0; i < children.length; i++) {
     const child = children[i] as EGX.PureElement;
-    if (child.type === "html") {
-      Helmet.writeHtmlAttr = () => child.props ?? {};
-    } else if (child.type === "body") {
-      Helmet.writeBodyAttr = () => child.props ?? {};
-    } else elements.push(child);
+    if (child != null) {
+      if (child.type === "html") {
+        Helmet.writeHtmlAttr = () => child.props ?? {};
+      } else if (child.type === "body") {
+        Helmet.writeBodyAttr = () => child.props ?? {};
+      } else elements.push(child);
+    }
   }
   if (footer) Helmet.writeFooterTag = () => toHelmet(elements.concat(bodys));
   else Helmet.writeHeadTag = () => toHelmet(elements.concat(heads));

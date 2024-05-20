@@ -14,10 +14,11 @@ export type TObject = { [k: string]: TAny };
 type AnyStr = string & EObject;
 type BoolStr = "true" | "false";
 type Merge<A, B> = {
-  [K in keyof (A & B)]: (
-    K extends keyof B ? B[K]
-      : (K extends keyof A ? A[K] : never)
-  );
+  [K in keyof (A & B)]: K extends keyof B
+    ? B[K]
+    : K extends keyof A
+      ? A[K]
+      : never;
 };
 /**
  * Function Component (FC).
@@ -26,9 +27,7 @@ type Merge<A, B> = {
  *   return <h1>{props.title}</h1>
  * }
  */
-export type FC<T = EObject> = (
-  props: EGX.Props<T>,
-) => TAny;
+export type FC<T = EObject> = (props: EGX.Props<T>) => TAny;
 export type TMethod =
   | "GET"
   | "POST"
@@ -38,11 +37,14 @@ export type TMethod =
   | "PATCH"
   | "HEAD"
   | "ANY";
-export type TDataContext<T = EObject> = Merge<{
-  req: ERequest;
-  res: EResponse;
-  next: NextFunction;
-}, T>;
+export type TDataContext<T = EObject> = Merge<
+  {
+    req: ERequest;
+    res: EResponse;
+    next: NextFunction;
+  },
+  T
+>;
 
 type HxSwap =
   | "innerHTML"
@@ -227,9 +229,7 @@ export namespace EGX {
      * @see https://htmx.org/attributes/hx-ext/
      * @see {@linkcode HtmxBuiltinExtensions} for how to declare extensions in JSX.
      */
-    "hx-ext"?:
-      | "ignore:"
-      | AnyStr;
+    "hx-ext"?: "ignore:" | AnyStr;
     /**
      * Adds to the headers that will be submitted with the request.
      * @see https://htmx.org/attributes/hx-headers/
@@ -331,7 +331,7 @@ export namespace EGX {
      * Apply class transitions on this element.
      * @see https://htmx.org/extensions/class-tools/
      */
-    "classes"?: "add " | "remove " | "toggle " | AnyStr;
+    classes?: "add " | "remove " | "toggle " | AnyStr;
     /**
      * The element or elements to disable during requests.
      * Accepts CSS selectors.
@@ -672,16 +672,14 @@ export namespace EGX {
     // deno-lint-ignore ban-types
     | (string & {});
   type DOMCSSProperties = {
-    [
-      key in keyof Omit<
-        CSSStyleDeclaration,
-        | "item"
-        | "setProperty"
-        | "removeProperty"
-        | "getPropertyValue"
-        | "getPropertyPriority"
-      >
-    ]?: string | number | null | undefined;
+    [key in keyof Omit<
+      CSSStyleDeclaration,
+      | "item"
+      | "setProperty"
+      | "removeProperty"
+      | "getPropertyValue"
+      | "getPropertyPriority"
+    >]?: string | number | null | undefined;
   };
   type AllCSSProperties = {
     [key: string]: string | number | null | undefined;
@@ -805,12 +803,7 @@ export namespace EGX {
   export interface ButtonHTMLAttributes extends HTMLAttributes {
     disabled?: boolean | undefined;
     form?: string | undefined;
-    formAction?:
-      | string
-      | EObject[
-        keyof EObject
-      ]
-      | undefined;
+    formAction?: string | EObject[keyof EObject] | undefined;
     formEncType?: string | undefined;
     formMethod?: string | undefined;
     formNoValidate?: boolean | undefined;
@@ -866,12 +859,7 @@ export namespace EGX {
 
   export interface FormHTMLAttributes extends HTMLAttributes {
     acceptCharset?: string | undefined;
-    action?:
-      | string
-      | undefined
-      | EObject[
-        keyof EObject
-      ];
+    action?: string | undefined | EObject[keyof EObject];
     autoComplete?: string | undefined;
     encType?: string | undefined;
     method?: string | undefined;
@@ -968,12 +956,7 @@ export namespace EGX {
       | "send"
       | undefined;
     form?: string | undefined;
-    formAction?:
-      | string
-      | EObject[
-        keyof EObject
-      ]
-      | undefined;
+    formAction?: string | EObject[keyof EObject] | undefined;
     formEncType?: string | undefined;
     formMethod?: string | undefined;
     formNoValidate?: boolean | undefined;
@@ -1373,7 +1356,7 @@ export namespace EGX {
     track: TrackHTMLAttributes;
     u: HTMLAttributes;
     ul: HTMLAttributes;
-    "var": HTMLAttributes;
+    var: HTMLAttributes;
     video: VideoHTMLAttributes;
     wbr: HTMLAttributes;
     webview: WebViewHTMLAttributes;
