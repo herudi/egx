@@ -145,6 +145,7 @@ function toAttr(props: TAny = {}) {
 }
 export async function renderToString(elem: EGX.ChildNode): Promise<string> {
   if (elem == null || typeof elem === "boolean") return "";
+  if (isFunc(elem)) return elem as TAny;
   if (typeof elem === "number") return String(elem);
   if (typeof elem === "string") return escapeHtml(elem);
   if (isArray(elem)) {
@@ -192,7 +193,11 @@ export function egx(htmxScriptElement?: EGX.ChildNode): RequestHandler {
         children,
         value: { req, res, next },
       });
-      const body = await renderToString(elem);
+      const body = (await renderToString(elem)) as TAny;
+      if (isFunc(body)) {
+        await body();
+        return;
+      }
       const isHtmxReq = req.headers["hx-request"] === "true";
       res.send(isHtmxReq ? body : await toHtml(body, init));
     };

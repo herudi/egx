@@ -12,12 +12,16 @@ interfaces with the simplicity and power of hypertext.
 
 ## Features
 
-- Hooks support (`useRequest`, `useResponse`, `useBody`, `useParams`, `useQuery`, etc.).
+- Hooks support (`useRequest`, `useResponse`, `useBody`, `useParams`,
+  `useQuery`, etc.).
 - Helmet support.
 - `AsyncComponent` support.
+- `CleanupComponent` support.
 
 ## Install
+
 ### Starter Template
+
 ```bash
 npx degit herudi/egx/starter my-app
 cd my-app
@@ -31,15 +35,16 @@ npm run build
 
 // run prod
 npm run start
-
 ```
 
 ### Install Manually
+
 ```bash
 npm i egx
 ```
 
-## Basic Usage 
+## Basic Usage
+
 ```tsx
 /** @jsx h */
 /** @jsxFrag h.Fragment */
@@ -81,55 +86,60 @@ app.listen(3000, () => {
 ```
 
 ## Using Hooks
+
 ### useRequest
+
 ```tsx
 const Foo = () => {
   const { url } = useRequest();
   return <h1>{url}</h1>;
-}
+};
 ```
 
 ### useResponse
-```tsx
 
+```tsx
 const Foo = () => {
   const res = useResponse();
   res.set("my-header", "value");
   return <h1>hello</h1>;
-}
+};
 ```
 
 ### useParams
+
 ```tsx
 type User = { name: string };
 
 const Foo = () => {
   const { name } = useParams<User>();
   return <h1>{name}</h1>;
-}
+};
 
 app.get("/user/:name", (req, res) => {
-  res.egx(<Foo/>);
+  res.egx(<Foo />);
 });
 ```
 
 ### useQuery
+
 ```tsx
 type User = { name: string };
 
 const Foo = () => {
   const { name } = useQuery<User>();
   return <h1>{name}</h1>;
-}
+};
 
 app.get("/user", (req, res) => {
-  res.egx(<Foo/>);
+  res.egx(<Foo />);
 });
 
 // GET /user?name=john
 ```
 
 ### useBody
+
 ```tsx
 type User = { name: string };
 
@@ -139,18 +149,62 @@ const UserPost = async () => {
   await db.user.save(user);
 
   return <h1>{user.name}</h1>;
-}
+};
 
 app.post("/user", (req, res) => {
-  res.egx(<UserPost/>);
+  res.egx(<UserPost />);
+});
+```
+
+## Using Cleanup Component
+
+A `cleanup` component for any custom `send`. for example: json/redirect.
+
+### Example Sign and redirect
+
+```tsx
+const Sign = async () => {
+  const req = useRequest();
+  const res = useResponse();
+
+  const token = await getToken(req.body);
+
+  if (token) {
+    // use cleanup to redirect
+    return () => {
+      res.cookie("user", token).redirect("/admin");
+    };
+  }
+  return <SignPost message="login failure" />;
+};
+```
+
+### Example Auth and NextFunction
+
+```tsx
+const Auth: FC = (props) => {
+  const req = useRequest();
+  const next = useNext();
+
+  if (req.isLogin === false) {
+    // use cleanup to next function
+    return () => {
+      next(new Error("user not found"));
+    };
+  }
+
+  return props.children;
+};
+
+app.get("/", (req, res) => {
+  res.egx(
+    <Auth>
+      <Home />
+    </Auth>,
+  );
 });
 ```
 
 ## License
 
 [MIT](LICENSE)
-
-
-
-
-

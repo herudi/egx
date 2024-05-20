@@ -1,4 +1,4 @@
-import { h, renderToString } from "./index";
+import { h, isFunc, renderToString } from "./index";
 import type { EGX, EObject, TAny, TDataContext, TObject } from "./types";
 type TValue = string | number | TAny;
 type TContext = {
@@ -106,3 +106,15 @@ export const useBody = <T = TObject>(): T => useRequest().body as T;
  * ```
  */
 export const useResponse = () => useDataContext().res;
+
+/**
+ * useNext.
+ * @example
+ * ```tsx
+ * const Auth: FC = () => {
+ *   const next = useNext();
+ *   return next;
+ * }
+ * ```
+ */
+export const useNext = () => useDataContext().next;
