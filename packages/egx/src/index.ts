@@ -115,7 +115,7 @@ export function toStyle(val: EGX.CSSProperties) {
   );
 }
 const REG_EMPTY_TAG =
-  /area|base|br|col|embed|hr|img|input|keygen|link|meta|param|source|track|wbr/;
+  /^(area|base|br|col|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)$/;
 function toAttr(props: TAny = {}) {
   let attr = "";
   for (const k in props) {
@@ -185,7 +185,7 @@ export const toHtml = async (body: string, init: EGX.ChildNode) => {
 export function egx(htmxScriptElement?: EGX.ChildNode): RequestHandler {
   const init =
     htmxScriptElement ??
-    h("script", { src: "https://unpkg.com/htmx.org@1.9.10" });
+    h("script", { src: "https://unpkg.com/htmx.org@2.0.6" });
   return (req, res, next) => {
     res.egx = async (element: EGX.Element | FC<TAny>) => {
       let children: TAny = isFunc(element) ? h(element as FC, null) : element;

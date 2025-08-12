@@ -1,4 +1,4 @@
-import { h, isFunc, renderToString } from "./index";
+import { h, renderToString } from "./index";
 import type { EGX, EObject, TAny, TDataContext, TObject } from "./types";
 type TValue = string | number | TAny;
 type TContext = {

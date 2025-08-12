@@ -1,78 +1,10 @@
 {
-  "name": "egx",
-  "version": "0.0.6",
-  "description": "Express got Htmx and JSX",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
-  "scripts": {
-    "dev": "tsx watch dev.tsx",
-    "format": "prettier --write \"**/*{.ts,.tsx}\"",
-    "build": "rimraf dist && tsc && tsc --project tsconfig.esm.json && tsx ./scripts/pkg.ts"
-  },
-  "keywords": [
-    "Express Htmx",
-    "ExpressJS",
-    "Htmx",
-    "JSX",
-    "React"
+  "name": "egx-monorepo",
+  "private": true,
+  "scripts": {},
+  "workspaces": [
+    "packages/egx",
+    "packages/starter"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/herudi/egx.git"
-  },
-  "bugs": {
-    "url": "https://github.com/herudi/egx/issues"
-  },
-  "author": "Herudi",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "express": "^4.18.2",
-    "prettier": "3.2.5",
-    "rimraf": "^5.0.5",
-    "tsx": "^4.7.0",
-    "typescript": "^5.4.5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js"
-    },
-    "./jsx-runtime": {
-      "types": "./dist/types/jsx-runtime.d.ts",
-      "require": "./dist/cjs/jsx-runtime.js",
-      "import": "./dist/esm/jsx-runtime.js"
-    },
-    "./jsx-dev-runtime": {
-      "types": "./dist/types/jsx-dev-runtime.d.ts",
-      "require": "./dist/cjs/jsx-dev-runtime.js",
-      "import": "./dist/esm/jsx-dev-runtime.js"
-    },
-    "./api": {
-      "types": "./dist/types/api.d.ts",
-      "require": "./dist/cjs/api.js",
-      "import": "./dist/esm/api.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/types/index.d.ts"
-      ],
-      "jsx-runtime": [
-        "./dist/types/jsx-runtime.d.ts"
-      ],
-      "jsx-dev-runtime": [
-        "./dist/types/jsx-dev-runtime.d.ts"
-      ],
-      "api": [
-        "./dist/types/api.d.ts"
-      ]
-    }
-  }
+  "repository": "git+https://github.com/herudi/egx.git"
 }

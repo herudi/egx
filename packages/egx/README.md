@@ -204,7 +204,3 @@ app.get("/", (req, res) => {
   );
 });
 ```
-
-## License
-
-[MIT](LICENSE)
