@@ -1,8 +1,6 @@
 import type { RequestHandler } from "express";
 import { Helmet as HelmetCore, type HelmetRewind } from "./helmet";
-import { BaseContext } from "./hook";
 import type { EGX, EObject, FC, TAny } from "./types";
-export * from "./hook";
 export * from "./component";
 export * from "./types";
 
@@ -62,6 +60,7 @@ export function h(
   props?: EObject | null,
   ...children: EGX.ChildNode[]
 ): EGX.ChildNode {
+  props ??= {};
   return {
     type,
     props: children.length > 0 ? { ...props, children } : props,
@@ -143,17 +142,27 @@ function toAttr(props: TAny = {}) {
   }
   return attr;
 }
-export async function renderToString(elem: EGX.ChildNode): Promise<string> {
+export async function renderToString(
+  elem: EGX.ChildNode,
+  initProps: TAny = {},
+): Promise<string> {
   if (elem == null || typeof elem === "boolean") return "";
   if (isFunc(elem)) return elem as TAny;
   if (typeof elem === "number") return String(elem);
   if (typeof elem === "string") return escapeHtml(elem);
   if (isArray(elem)) {
-    return (await Promise.all(elem.map(renderToString))).join("");
+    return (
+      await Promise.all(elem.map((el) => renderToString(el, initProps)))
+    ).join("");
   }
   const { type, props } = elem as EGX.FCElement;
-  if (typeof type === "function") {
-    return await renderToString(await type(props ?? {}));
+  if (isFunc(type)) {
+    if (initProps.req) {
+      props.req = initProps.req;
+      props.res = initProps.res;
+      props.next = initProps.next;
+    }
+    return await renderToString(await type(props), initProps);
   }
   const attr = toAttr(props);
   if (REG_EMPTY_TAG.test(type)) return `<${type}${attr}>`;
@@ -161,9 +170,10 @@ export async function renderToString(elem: EGX.ChildNode): Promise<string> {
     if (type === "") return props[dangerHTML].__html;
     return `<${type}${attr}>${props[dangerHTML].__html}</${type}>`;
   }
-  if (type === "") return await renderToString(props?.["children"]);
+  if (type === "") return await renderToString(props?.["children"], initProps);
   return `<${type}${attr}>${await renderToString(
     props?.["children"],
+    initProps,
   )}</${type}>`;
 }
 
@@ -188,12 +198,9 @@ export function egx(htmxScriptElement?: EGX.ChildNode): RequestHandler {
     h("script", { src: "https://unpkg.com/htmx.org@2.0.6" });
   return (req, res, next) => {
     res.egx = async (element: EGX.Element | FC<TAny>) => {
-      let children: TAny = isFunc(element) ? h(element as FC, null) : element;
-      const elem = await BaseContext.Provider({
-        children,
-        value: { req, res, next },
-      });
-      const body = (await renderToString(elem)) as TAny;
+      let child: TAny = isFunc(element) ? h(element as FC, {}) : element;
+      const initProps = { req, res, next };
+      const body = (await renderToString(child, initProps)) as TAny;
       if (isFunc(body)) {
         await body();
         return;

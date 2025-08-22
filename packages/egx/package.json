@@ -1,6 +1,6 @@
 {
   "name": "egx",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Express got Htmx and JSX",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

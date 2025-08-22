@@ -28,23 +28,6 @@ type Merge<A, B> = {
  * }
  */
 export type FC<T = EObject> = (props: EGX.Props<T>) => TAny;
-export type TMethod =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "OPTIONS"
-  | "DELETE"
-  | "PATCH"
-  | "HEAD"
-  | "ANY";
-export type TDataContext<T = EObject> = Merge<
-  {
-    req: ERequest;
-    res: EResponse;
-    next: NextFunction;
-  },
-  T
->;
 
 type HxSwap =
   | "innerHTML"
@@ -90,7 +73,15 @@ export namespace EGX {
     key: number | string | null;
   };
   export type Element = PureElement | Promise<PureElement>;
-  export type Props<P = EObject> = Merge<{ children?: ChildNode }, P>;
+  export type Props<P = EObject> = Merge<
+    {
+      children?: ChildNode;
+      req?: ERequest;
+      res?: EResponse;
+      next?: NextFunction;
+    },
+    P
+  >;
   export type ChildNode<T = EObject> =
     | ChildNode<T>[]
     | PureElement<T>

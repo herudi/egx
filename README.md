@@ -12,11 +12,10 @@ interfaces with the simplicity and power of hypertext.
 
 ## Features
 
-- Hooks support (`useRequest`, `useResponse`, `useBody`, `useParams`,
-  `useQuery`, etc.).
+- Direct `htmx`.
 - Helmet support.
 - `AsyncComponent` support.
-- `CleanupComponent` support.
+- Express handlers via `Components`.
 
 ## Install
 
@@ -74,7 +73,7 @@ app.post("/clicked", (req, res) => {
 // handling promise
 app.get("/pet", async (req, res, next) => {
   try {
-    await res.egx(<h1>Cat</h1>);
+    await res.egx(<Cat/>);
   } catch (err) {
     next(err);
   }
@@ -85,87 +84,17 @@ app.listen(3000, () => {
 });
 ```
 
-## Using Hooks
-
-### useRequest
+### Express Handlers In Components
 
 ```tsx
-const Foo = () => {
-  const { url } = useRequest();
-  return <h1>{url}</h1>;
-};
-```
 
-### useResponse
-
-```tsx
-const Foo = () => {
-  const res = useResponse();
-  res.set("my-header", "value");
-  return <h1>hello</h1>;
-};
-```
-
-### useParams
-
-```tsx
-type User = { name: string };
-
-const Foo = () => {
-  const { name } = useParams<User>();
-  return <h1>{name}</h1>;
+// example 1
+const Home: FC = ({ req, res, next }) => {
+  return <h1>Welcome {req.url}</h1>;
 };
 
-app.get("/user/:name", (req, res) => {
-  res.egx(<Foo />);
-});
-```
-
-### useQuery
-
-```tsx
-type User = { name: string };
-
-const Foo = () => {
-  const { name } = useQuery<User>();
-  return <h1>{name}</h1>;
-};
-
-app.get("/user", (req, res) => {
-  res.egx(<Foo />);
-});
-
-// GET /user?name=john
-```
-
-### useBody
-
-```tsx
-type User = { name: string };
-
-const UserPost = async () => {
-  const user = useBody<User>();
-  // example save to db
-  await db.user.save(user);
-
-  return <h1>{user.name}</h1>;
-};
-
-app.post("/user", (req, res) => {
-  res.egx(<UserPost />);
-});
-```
-
-## Using Cleanup Component
-
-A `cleanup` component for any custom `send`. for example: json/redirect.
-
-### Example Sign and redirect
-
-```tsx
-const Sign = async () => {
-  const req = useRequest();
-  const res = useResponse();
+// example 2: redirect
+const SignPost: FC = async ({ req, res }) => {
 
   const token = await getToken(req.body);
 
@@ -175,25 +104,34 @@ const Sign = async () => {
       res.cookie("user", token).redirect("/admin");
     };
   }
-  return <SignPost message="login failure" />;
+  return <h1>Login Failure</h1>;
 };
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.egx(<Home />);
+});
+
+app.post("/sign", (req, res) => {
+  res.egx(<SignPost />);
+});
+
 ```
 
 ### Example Auth and NextFunction
 
 ```tsx
-const Auth: FC = (props) => {
-  const req = useRequest();
-  const next = useNext();
+const Auth: FC = ({ req, next, children }) => {
 
-  if (req.isLogin === false) {
+  if (!req.isLogin) {
     // use func to next function
     return () => {
       next(new Error("user not found"));
     };
   }
 
-  return props.children;
+  return children;
 };
 
 app.get("/", (req, res) => {

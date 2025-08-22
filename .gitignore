@@ -1,5 +1,6 @@
 node_modules
 /dev
+/backup
 dev.tsx
 dev.jsx
 dev.js
